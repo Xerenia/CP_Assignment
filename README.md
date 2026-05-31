@@ -1,45 +1,43 @@
-🎮 비트 바이트 (Beat Byte)
-BPM 기반 리듬 판정 알고리즘과 외부 클라우드 REST API가 결합한 하이브리드 아케이드 스네이크 게임
+# 🎮 비트 바이트 (Beat Byte)
 
-본 프로젝트는 클래식 아케이드 게임인 스네이크(Snake)의 규칙을 뒤집어, 음악의 비트 타이밍에 맞춰 방향을 전환해야 하는 리듬 동기화 액션 퍼즐 게임입니다. 생성형 AI(Gemini 1.5 Pro)와의 긴밀한 페어 프로그래밍(Pair Programming)을 통해 유기적인 MVC 아키텍처 설계, 실시간 외부 클라우드 서버 배포, 견고한 방어적 코딩을 달성했습니다.
+> **BPM 기반 리듬 판정 알고리즘과 외부 클라우드 REST API가 결합한 하이브리드 아케이드 스네이크 게임**
+> 
+> 본 프로젝트는 클래식 아케이드 게임인 스네이크(Snake)의 규칙을 뒤집어, 음악의 비트 타이밍에 맞춰 방향을 전환해야 하는 **리듬 동기화 액션 퍼즐 게임**입니다. 생성형 AI(Gemini 1.5 Pro)와의 긴밀한 페어 프로그래밍(Pair Programming)을 통해 유기적인 MVC 아키처 설계, 실시간 외부 클라우드 서버 배포, 견고한 방어적 코딩을 달성했습니다.
 
-🌟 주요 특징 및 기술적 차별점 (Key Features)
-프레임 독립형 리듬 싱크 무브먼트 (BPM Synchronization)
+---
 
-단순 FPS 프레임 기반 이동이 아닌, time.time() 절대 시간 연산을 통한 BPM 매칭 알고리즘 구현.
+## 🌟 주요 특징 및 기술적 차별점 (Key Features)
 
-BGM의 비트 오차를 소수점 아래 세 자리까지 정밀하게 계산하여 PERFECT, GOOD, MISS 판정 부여.
+1. **프레임 독립형 리듬 싱크 무브먼트 (BPM Synchronization)**
+   - 단순 FPS 프레임 기반 이동이 아닌, `time.time()` 절대 시간 연산을 통한 **BPM 매칭 알고리즘** 구현.
+   - BGM의 비트 오차를 소수점 아래 세 자리까지 정밀하게 계산하여 `PERFECT`, `GOOD`, `MISS` 판정 부여.
+   - 스테이지가 올라갈수록 BPM이 동적으로 빨라지며 판정 허용 범위(Window)가 좁아지는 유기적 난이도 조절 시스템.
 
-스테이지가 올라갈수록 BPM이 동적으로 빨라지며 판정 허용 범위(Window)가 좁아지는 유기적 난이도 조절 시스템.
+2. **실시간 외부 클라우드 글로벌 리더보드 (REST API)**
+   - 로컬 파일 저장을 넘어 외부 클라우드 플랫폼 **Render.com**에 파이썬 Flask 기반 중앙 웹 서버 배포 완료.
+   - 게임 오버 시 클라이언트와 서버 간의 비동기 GET/POST REST API 통신을 통해 전 세계 플레이어의 실시간 상위 10등 순위판 정렬 및 동기화 렌더링.
 
-실시간 외부 클라우드 글로벌 리더보드 (REST API)
+3. **엔지니어링 기반의 방어적 코딩 (Robust Architecture)**
+   - **에셋 폴백(Fallback) 시스템:** 이미지 및 사운드 리소스가 누락되거나 에러가 발생해도 게임이 크래시되지 않고 시스템 내장 기본 도형 렌더링으로 자동 대체 구동.
+   - **네트워크 장애 방어:** 외부 서버 점검 또는 네트워크 단절 시 게임 멈춤(Freezing) 현상을 막기 위한 `3.0s Timeout` 설정 및 하이브리드 로컬 백업 시스템(`data/highscore.json`)으로의 자동 전환.
+   - **자동 환경 인프라 구축:** 프로그램 구동 시 데이터 저장 폴더(`data/`)가 없으면 런타임에서 자동으로 감지하여 개설하는 자가 복구형 입출력 로직 반영.
 
-로컬 파일 저장을 넘어 외부 클라우드 플랫폼 Render.com에 파이썬 Flask 기반 중앙 웹 서버 배포 완료.
+---
 
-게임 오버 시 클라이언트와 서버 간의 비동기 GET/POST REST API 통신을 통해 전 세계 플레이어의 실시간 상위 10등 순위판 정렬 및 동기화 렌더링.
+## 🛠️ 기술 스택 (Tech Stack)
 
-엔지니어링 기반의 방어적 코딩 (Robust Architecture)
+- **Language:** Python 3.11 ~ 3.13
+- **Client GUI / Audio Core:** Pygame 2.6.0+
+- **Database & Serialization:** JSON Persistent Data Architecture
+- **Web API Server:** Flask 3.0.3+ (Deployed on Render Cloud)
+- **Asset Generation Engine:** Pillow (PIL) 10.3.0+
 
-에셋 폴백(Fallback) 시스템: 이미지 및 사운드 리소스가 누락되거나 에러가 발생해도 게임이 크래시되지 않고 시스템 내장 기본 도형 렌더링으로 자동 대체 구동.
+---
 
-네트워크 장애 방어: 외부 서버 점검 또는 네트워크 단절 시 게임 멈춤(Freezing) 현상을 막기 위한 3.0s Timeout 설정 및 하이브리드 로컬 백업 시스템(data/highscore.json)으로의 자동 전환.
+## 📁 프로젝트 폴더 구조 (Directory Structure)
 
-자동 환경 인프라 구축: 프로그램 구동 시 데이터 저장 폴더(data/)가 없으면 런타임에서 자동으로 감지하여 개설하는 자가 복구형 입출력 로직 반영.
-
-🛠️ 기술 스택 (Tech Stack)
-Language: Python 3.11 ~ 3.13
-
-Client GUI / Audio Core: Pygame 2.6.0+
-
-Database & Serialization: JSON Persistent Data Architecture
-
-Web API Server: Flask 3.0.3+ (Deployed on Render Cloud)
-
-Asset Generation Engine: Pillow (PIL) 10.3.0+
-
-📁 프로젝트 폴더 구조 (Directory Structure)
-Plaintext
-beat-byte/                           # 프로젝트 루트 폴더 (Client)
+```text
+CP_Assignment/                       # 프로젝트 루트 폴더 (Client)
 │
 ├── data/                            # 로컬 데이터 영속성 폴더
 │   └── highscore.json               # 오프라인 백업 및 로컬 최고 점수 저장 파일 (자동 생성)
@@ -53,14 +51,17 @@ beat-byte/                           # 프로젝트 루트 폴더 (Client)
 ├── generate_assets.py               # [Utility] Pillow 라이브러리 기반 30x30 임시 이미지 에셋 자동 생성기
 ├── requirements.txt                 # 프로젝트 통합 의존성 환경 명세서
 └── README.md                        # 본 프로젝트 매뉴얼 파일
+
 🚀 시작하기 및 실행 방법 (How to Run)
+
 1. 저장소 클론 및 폴더 이동
-Bash
-git clone https://github.com/your-username/beat-byte.git
-cd beat-byte
+git clone [https://github.com/Xerenia/CP_Assignment.git](https://github.com/Xerenia/CP_Assignment.git)
+cd CP_Assignment
+
 2. 필수 의존성 라이브러리 일괄 설치
 Bash
 pip install -r requirements.txt
+
 3. 임시 네온 이미지 에셋 생성 스크립트 실행
 외부 에셋 사이트를 이용하지 않고, 파이썬 그래픽 연산을 통해 assets/images/ 폴더 내에 규격에 맞는 30x30 임시 이미지 파일들을 즉석에서 자동 제작합니다.
 
@@ -105,7 +106,7 @@ python main_ui.py
 4단계 (에셋 자가 복구): Pillow 내장 라이브러리를 역이용해 디자이너 에셋 수집 전 런타임에서 임시 도트 에셋 파일들을 스스로 생성해 내는 자동화 스크립트 기능 추가.
 
 👥 팀원 및 역할 (Team Members)
-메인 아키텍트 & 개발 총괄 (Back-end / Cloud Infrastructure): 박안석
+메인 아키텍트 & 개발 총괄 (Back-end / Cloud Infrastructure): 안석 (Anseok)
 
 프론트엔드 GUI 및 이벤트 인터럽트 제어 (Front-end): 박명원, 서민우
 
