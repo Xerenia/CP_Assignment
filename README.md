@@ -72,7 +72,7 @@ CP_Assignment/                       # 프로젝트 루트 폴더 (Client)
 
 ### 1. 저장소 클론 및 폴더 이동
 ```bash
-git clone [https://github.com/Xerenia/CP_Assignment.git](https://github.com/Xerenia/CP_Assignment.git)
+git clone https://github.com/Xerenia/CP_Assignment.git
 cd CP_Assignment
 ```
 
