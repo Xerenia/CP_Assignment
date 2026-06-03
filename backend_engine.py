@@ -278,3 +278,4 @@ class GameEngine:
 
     def game_over(self) -> None:
         self.state = GameState.GAME_OVER
+
