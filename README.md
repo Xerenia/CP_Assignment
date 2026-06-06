@@ -195,6 +195,19 @@ python main_ui.py
 
 - 🪙 **보너스 코인 (Coin):** 보너스 점수 500점 즉시 획득.
 
+### 🎁 아이템 및 스테이지 업 (Stage Up) 규칙
+- 게임 내에 생성되는 **모든 종류의 아이템(일반 음식, 생명 물약, 보너스 코인)을 종류에 상관없이 누적 5개 섭취할 때마다** 다음 스테이지로 진입합니다.
+- 스테이지 상승 시 화면 중앙에 `STAGE X START!` 시각 연출이 발생하며, 아래 명세표에 따라 **장애물 수량이 복리로 누적 가속 증가**하여 게임 영역을 압박합니다.
+
+| 난이도 (BPM) | 1 ➔ 2 스테이지 진입 시 (기본 증가) | 이후 스테이지 증가 폭 공식 (복리 가속) |
+| :--- | :--- | :--- |
+| **EASY** (120) | **+2개** 증가 | `2 + (현재 Stage - 2)` 개씩 추가 생성 |
+| **`NORMAL`** (140) | **+3개** 증가 | `3 + (현재 Stage - 2)` 개씩 추가 생성 |
+| **HARD** (160) | **+4개** 증가 | `4 + (현재 Stage - 2)` 개씩 추가 생성 |
+
+> *ex) HARD 모드 기준: 2스테이지 진입 시 +4개 ➔ 3스테이지 진입 시 +5개 ➔ 4스테이지 진입 시 +6개 추가 배치*
+
+---
 
 
 
@@ -243,24 +256,50 @@ python main_ui.py
 
 ## 💻 [개발자 가이드] 핵심 소스코드 해설
 
+### 1. 1비트 비율 기반 어뷰징 방지 판정 알고리즘
+- **소스 위치:** `backend_engine.py` ➔ `RhythmManager.__init__()`
 
-
-1. 1비트 비율 기반 어뷰징 방지 판정 알고리즘
-소스 위치: backend_engine.py ➔ RhythmManager.__init__()
-
-Python
+```python
 # 난이도에 맞는 BPM 고정 및 1비트 소요 시간 계산
 self.sec_per_beat = 60.0 / self.current_bpm
 
 # 절대 시간이 아닌, 1비트 소요 시간에 대한 '비율(Ratio)'로 판정창 동적 할당
 self.perfect_window = self.sec_per_beat * 0.15  # 15% 허용
 self.good_window = self.sec_per_beat * 0.30     # 30% 허용
+
 과거 고정된 시간(0.08초 등)으로 판정할 경우 BPM이 빨라질수록 비트 간격이 좁아져 아무렇게나 연타해도 판정을 통과하는 심각한 기획적 결함이 있었습니다. 이를 1비트 소요 시간에 비례하여 동적으로 좁아지도록 수학적으로 재설계하여 게임의 공정성을 확보했습니다.
 
-2. 일시정지 해제 시 델타 타임(Delta Time) 보정
-소스 위치: main_ui.py ➔ RhythmSnakeUI.handle_events()
+### 2. 누적 아이템 섭취 및 복리형 장애물 가속 계산 알고리즘
+- **소스 위치:** `backend_engine.py` ➔ `GameEngine.check_item_consumption()`
 
-Python
+
+
+```python
+# 아이템 종류에 관계없이 총 먹은 아이템 수 누적
+self.total_items_eaten += 1
+
+if self.total_items_eaten % 5 == 0:
+    self.stage += 1
+    self.stage_up_triggered = True  # UI 단 깜빡임 연출 트리거 활성화
+    
+    # 난이도별 초기 증가폭 설정 (EASY: 2, NORMAL: 3, HARD: 4)
+    base_increment = {"EASY": 2, "NORMAL": 3, "HARD": 4}.get(self.current_difficulty, 3)
+    
+    # 스테이지가 올라갈수록 증가 폭 자체가 늘어나는 복리 가속 공식 적용
+    acceleration = self.stage - 2
+    final_obstacle_increment = base_increment + acceleration
+    
+    self.obstacle_count += final_obstacle_increment
+    self.spawn_obstacles()  # 새 장애물 실시간 맵 배치
+
+
+
+
+```markdown
+### 3. 일시정지 해제 시 델타 타임(Delta Time) 보정
+- **소스 위치:** `main_ui.py` ➔ `RhythmSnakeUI.handle_events()`
+
+```python
 if label == "계속하기":
     if hasattr(self, 'pause_start_time'):
         # 일시정지 상태에 머물렀던 절대 시간을 계산
@@ -270,7 +309,9 @@ if label == "계속하기":
         
     current_elapsed = self.get_elapsed_time()
     self.engine.last_beat_time = current_elapsed # 백엔드 비트 틱 강제 동기화
+
 pygame.time.get_ticks()는 게임이 멈춰있어도 계속 흘러갑니다. 단순히 음악만 멈췄다가 재생하면 누적된 시간 오차 때문에 수십 개의 프레임이 한 번에 연산되어 게임이 튕기는 현상을 막기 위한 핵심 동기화 로직입니다.
+
 
 
 
