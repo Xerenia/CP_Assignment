@@ -135,13 +135,10 @@ CP_Assignment/                       # 프로젝트 루트 폴더 (Client)
 
 ```bash
 
-# 1. 터미널 기준점을 바탕화면으로 강제 이동
 cd ~/Desktop
 
-# 2. 바탕화면에 새롭게 저장소 복제
 git clone https://github.com/Xerenia/CP_Assignment.git
 
-# 3. 방금 생성된 새 폴더로 '정확하게' 진입하기
 cd CP_Assignment
 
 ```
