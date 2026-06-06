@@ -123,39 +123,6 @@ CP_Assignment/                       # 프로젝트 루트 폴더 (Client)
 └── README.md                        # 본 프로젝트 매뉴얼 파일
 ```
 
-
-CP_Assignment/                       # 프로젝트 루트 폴더 (Client)
-
-│
-
-├── data/                            # 로컬 데이터 영속성 폴더
-
-│   └── highscore.json               # 오프라인 백업 및 로컬 최고 점수 저장 파일 (자동 생성)
-
-│
-
-├── assets/                          # 게임 멀티미디어 소스 폴더
-
-│   ├── images/                      # 뱀 스킨, 아이템, 음식 네온 .png 타일 에셋 폴더
-
-│   └── sounds/                      # 인게임 BGM(.mp3) 및 판정별 효과음(.wav) 폴더
-
-│
-
-├── backend_engine.py                # [Core] 게임 규칙, 박자 판정, REST API 클라이언트 엔진
-
-├── main_ui.py                       # [View/Controller] Pygame 기반 GUI 렌더링 및 믹서 루프
-
-├── generate_assets.py               # [Utility] Pillow 라이브러리 기반 30x30 임시 이미지 에셋 자동 생성기
-
-├── requirements.txt                 # 프로젝트 통합 의존성 환경 명세서
-
-└── README.md                        # 본 프로젝트 매뉴얼 파일
-
-
-
-
-
 ---
 
 
