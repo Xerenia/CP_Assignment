@@ -126,16 +126,12 @@ class GameEngine:
         self.server_url = "https://cp-assignment-server.onrender.com/api/leaderboard"
         self.highscore_file = Path("highscore.json")
         
-        # 💡 [요구사항 2] 로컬 데이터는 인스턴스 변수로 독립적으로 관리됨
         self.local_leaderboard: list[dict[str, Any]] = self.load_local_leaderboard()
         
         self.reset_game("NORMAL")
         self.state = GameState.READY 
 
     def fetch_server_leaderboard(self) -> list[dict[str, Any]]:
-        """
-        💡 [요구사항 2] 서버 데이터는 호출 시마다 독립적인 리스트로 반환됨
-        """
         try:
             req = urllib.request.Request(self.server_url, method="GET")
             with urllib.request.urlopen(req, timeout=3.0) as response:
@@ -204,7 +200,10 @@ class GameEngine:
         self.lives: int = 3
         self.combo: int = 0
         self.stage: int = 1
-        self.foods_eaten: int = 0
+        
+        # 💡 [요구사항 1] 기존 foods_eaten을 전체 아이템 누적 카운트 변수로 변경
+        self.total_items_eaten: int = 0
+        
         self.last_beat_time: float = 0.0
         self.invincible_mode: bool = False
         self.stage_up_triggered: bool = False
@@ -281,28 +280,41 @@ class GameEngine:
         if consumed_item:
             self.items.remove(consumed_item)
             
+            # 1. 개별 아이템 고유 효과 적용
             if consumed_item.item_type == ItemType.NORMAL_FOOD:
                 self.snake.grow(1)
                 self.score += 200
-                self.foods_eaten += 1
-                
-                if self.foods_eaten % 5 == 0:
-                    self.stage += 1
-                    self.stage_up_triggered = True
-                    
-                    if self.current_difficulty == "EASY": self.obstacle_count += 1
-                    elif self.current_difficulty == "HARD": self.obstacle_count += 3
-                    else: self.obstacle_count += 2
-                        
-                    self.spawn_obstacles()
-                    self.score += self.stage * 1000
-                    
             elif consumed_item.item_type == ItemType.LIFE_POTION:
                 self.lives = min(5, self.lives + 1)
                 self.score += 100
             elif consumed_item.item_type == ItemType.BONUS_COIN:
                 self.score += 500
                 
+            # 💡 [요구사항 1] 아이템 종류에 상관없이 누적 카운트 증가
+            self.total_items_eaten += 1
+            
+            # 5개 누적 시 스테이지 업
+            if self.total_items_eaten % 5 == 0:
+                self.stage += 1
+                self.stage_up_triggered = True
+                self.score += self.stage * 1000
+                
+                # 💡 [요구사항 2] 난이도별 초기 증가 폭 설정
+                base_increase: int = 3
+                if self.current_difficulty == "EASY":
+                    base_increase = 2
+                elif self.current_difficulty == "HARD":
+                    base_increase = 4
+                    
+                # 💡 [요구사항 2] 복리형 가속 공식: 초기 증가 폭 + (현재 스테이지 - 2)
+                acceleration: int = max(0, self.stage - 2)
+                added_obstacles: int = base_increase + acceleration
+                
+                # 장애물 최대치 갱신 및 즉시 스폰
+                self.obstacle_count += added_obstacles
+                self.spawn_obstacles()
+                
+            # 아이템 섭취 시 장애물 일부 재배치 및 빈자리 보충
             self.refresh_obstacles()
             while len(self.items) < 5:
                 self.spawn_item()
