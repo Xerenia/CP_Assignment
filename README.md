@@ -259,7 +259,7 @@ python main_ui.py
 ### 1. 1비트 비율 기반 어뷰징 방지 판정 알고리즘
 - **소스 위치:** `backend_engine.py` ➔ `RhythmManager.__init__()`
 
-```python
+```
 # 난이도에 맞는 BPM 고정 및 1비트 소요 시간 계산
 self.sec_per_beat = 60.0 / self.current_bpm
 
@@ -274,7 +274,7 @@ self.good_window = self.sec_per_beat * 0.30     # 30% 허용
 
 
 
-```python
+```
 # 아이템 종류에 관계없이 총 먹은 아이템 수 누적
 self.total_items_eaten += 1
 
@@ -295,7 +295,7 @@ if self.total_items_eaten % 5 == 0:
 
 
 
-```markdown
+```
 ### 3. 일시정지 해제 시 델타 타임(Delta Time) 보정
 - **소스 위치:** `main_ui.py` ➔ `RhythmSnakeUI.handle_events()`
 
