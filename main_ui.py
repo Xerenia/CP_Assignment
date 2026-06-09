@@ -3,6 +3,7 @@ import os
 import pygame
 import time
 import random
+import platform
 from enum import Enum, auto
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -63,13 +64,17 @@ class RhythmSnakeUI:
         self.clock = pygame.time.Clock()
 
         try:
-            self.font_small = pygame.font.SysFont("malgungothic", 20, bold=True)
-            self.font_main = pygame.font.SysFont("malgungothic", 24, bold=True)
-            self.font_large = pygame.font.SysFont("malgungothic", 48, bold=True)
-            self.font_title = pygame.font.SysFont("malgungothic", 36, bold=True)
-            self.font_judgment = pygame.font.SysFont("malgungothic", 64, bold=True)
-            self.font_card_title = pygame.font.SysFont("malgungothic", 42, bold=True)
+            # 운영체제가 맥(Darwin)이면 애플 산돌 고딕(또는 애플 고딕), 윈도우면 맑은 고딕 사용
+            os_font = "Apple SD Gothic Neo" if platform.system() == "Darwin" else "malgungothic"
+            
+            self.font_small = pygame.font.SysFont(os_font, 20, bold=True)
+            self.font_main = pygame.font.SysFont(os_font, 24, bold=True)
+            self.font_large = pygame.font.SysFont(os_font, 48, bold=True)
+            self.font_title = pygame.font.SysFont(os_font, 36, bold=True)
+            self.font_judgment = pygame.font.SysFont(os_font, 64, bold=True)
+            self.font_card_title = pygame.font.SysFont(os_font, 42, bold=True)
         except Exception:
+            # 만약 위 폰트도 없다면 시스템 기본 폰트로 폴백 (이 경우 한글이 깨질 수 있음)
             self.font_small = pygame.font.Font(None, 24)
             self.font_main = pygame.font.Font(None, 30)
             self.font_large = pygame.font.Font(None, 60)
