@@ -192,6 +192,10 @@ class GameEngine:
         self.current_difficulty = difficulty
         self.rhythm = RhythmManager(difficulty)
         
+        # 💡 [요구사항 1] 난이도별 점수 배율(Score Multiplier) 설정
+        multiplier_map: dict[str, float] = {"EASY": 1.0, "NORMAL": 1.25, "HARD": 1.5}
+        self.score_multiplier: float = multiplier_map.get(difficulty, 1.25)
+        
         self.items: list[Item] = []
         self.obstacles: list[tuple[int, int]] = []
         self.obstacle_count: int = random.randint(7, 11)
@@ -201,7 +205,6 @@ class GameEngine:
         self.combo: int = 0
         self.stage: int = 1
         
-        # 💡 [요구사항 1] 기존 foods_eaten을 전체 아이템 누적 카운트 변수로 변경
         self.total_items_eaten: int = 0
         
         self.last_beat_time: float = 0.0
@@ -258,11 +261,15 @@ class GameEngine:
         if judgment == Judgment.IGNORED: return judgment
             
         if judgment == Judgment.PERFECT:
-            self.score += 100 + (self.combo * 10)
+            # 💡 [요구사항 2] PERFECT 판정 점수에 배율 적용 후 정수 변환
+            base_score = 100 + (self.combo * 10)
+            self.score += int(base_score * self.score_multiplier)
             self.combo += 1
             self.snake.change_direction(direction)
         elif judgment == Judgment.GOOD:
-            self.score += 50
+            # 💡 [요구사항 2] GOOD 판정 점수에 배율 적용 후 정수 변환
+            base_score = 50
+            self.score += int(base_score * self.score_multiplier)
             self.combo = 0
             self.snake.change_direction(direction)
         else:
@@ -280,41 +287,38 @@ class GameEngine:
         if consumed_item:
             self.items.remove(consumed_item)
             
-            # 1. 개별 아이템 고유 효과 적용
+            # 💡 [요구사항 2] 개별 아이템 섭취 점수에 배율 적용 후 정수 변환
             if consumed_item.item_type == ItemType.NORMAL_FOOD:
                 self.snake.grow(1)
-                self.score += 200
+                self.score += int(200 * self.score_multiplier)
             elif consumed_item.item_type == ItemType.LIFE_POTION:
                 self.lives = min(5, self.lives + 1)
-                self.score += 100
+                self.score += int(100 * self.score_multiplier)
             elif consumed_item.item_type == ItemType.BONUS_COIN:
-                self.score += 500
+                self.score += int(500 * self.score_multiplier)
                 
-            # 💡 [요구사항 1] 아이템 종류에 상관없이 누적 카운트 증가
             self.total_items_eaten += 1
             
             # 5개 누적 시 스테이지 업
             if self.total_items_eaten % 5 == 0:
                 self.stage += 1
                 self.stage_up_triggered = True
-                self.score += self.stage * 1000
                 
-                # 💡 [요구사항 2] 난이도별 초기 증가 폭 설정
+                # 💡 [요구사항 2] 스테이지 업 보너스 점수에도 배율 적용 후 정수 변환
+                self.score += int((self.stage * 1000) * self.score_multiplier)
+                
                 base_increase: int = 3
                 if self.current_difficulty == "EASY":
                     base_increase = 2
                 elif self.current_difficulty == "HARD":
                     base_increase = 4
                     
-                # 💡 [요구사항 2] 복리형 가속 공식: 초기 증가 폭 + (현재 스테이지 - 2)
                 acceleration: int = max(0, self.stage - 2)
                 added_obstacles: int = base_increase + acceleration
                 
-                # 장애물 최대치 갱신 및 즉시 스폰
                 self.obstacle_count += added_obstacles
                 self.spawn_obstacles()
                 
-            # 아이템 섭취 시 장애물 일부 재배치 및 빈자리 보충
             self.refresh_obstacles()
             while len(self.items) < 5:
                 self.spawn_item()
